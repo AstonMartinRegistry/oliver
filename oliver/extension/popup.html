@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #111111;
+        --muted: #8a8a8a;
+        --line: #111111;
+        --hair: #e6e6e6;
+        --green: #1f8f3e;
+      }
+      * { box-sizing: border-box; }
+      body {
+        width: 300px;
+        margin: 0;
+        padding: 0;
+        font: 13px/1.5 "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: var(--ink);
+        background: #fff;
+      }
+      .head {
+        display: flex; align-items: center; gap: 9px;
+        padding: 14px 16px; border-bottom: 1px solid var(--line);
+      }
+      .head img { width: 24px; height: 24px; border: 1px solid var(--line); padding: 2px; }
+      .head h1 {
+        font-size: 13px; margin: 0; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.2em;
+      }
+      .body { padding: 16px; }
+      label {
+        display: block; font-size: 10px; text-transform: uppercase;
+        letter-spacing: 0.12em; color: var(--muted); margin: 14px 0 5px;
+      }
+      label:first-child { margin-top: 0; }
+      input[type="email"], input[type="password"], input[type="text"] {
+        width: 100%; padding: 10px 11px; font: inherit; color: var(--ink);
+        border: 1px solid var(--line); border-radius: 0; background: #fff;
+      }
+      input:focus { outline: none; box-shadow: inset 0 0 0 1px var(--ink); }
+      button {
+        font: inherit; font-weight: 500; cursor: pointer; border-radius: 0;
+        text-transform: uppercase; letter-spacing: 0.1em;
+      }
+      .primary {
+        width: 100%; margin-top: 16px; padding: 12px; background: var(--ink);
+        color: #fff; border: 1px solid var(--ink); font-size: 12px;
+      }
+      .primary:hover { background: #fff; color: var(--ink); }
+      .divider {
+        display: flex; align-items: center; gap: 10px; margin: 16px 0 0;
+        color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em;
+      }
+      .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--hair); }
+      .secondary {
+        width: 100%; margin-top: 12px; padding: 11px; background: #fff;
+        color: var(--ink); border: 1px solid var(--line); font-size: 12px;
+      }
+      .secondary:hover { background: var(--ink); color: #fff; }
+      .row {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 0; border-top: 1px solid var(--hair);
+      }
+      .row label { margin: 0; }
+      input[type="range"] { width: 120px; accent-color: var(--ink); }
+      .val { font-variant-numeric: tabular-nums; width: 34px; text-align: right; }
+      .hint { font-size: 10.5px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+      .alert { border: 1px solid var(--ink); padding: 9px 11px; font-size: 11.5px; margin-top: 12px; }
+      .stat { border: 1px solid var(--line); padding: 14px; }
+      .stat .num { font-size: 30px; font-weight: 500; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+      .stat .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-top: 2px; }
+      .stat .meta { font-size: 11px; color: var(--muted); margin-top: 10px; border-top: 1px solid var(--hair); padding-top: 8px; word-break: break-all; }
+      .stat .dot { display: inline-block; width: 7px; height: 7px; background: var(--green); margin-right: 6px; vertical-align: middle; }
+      .stat .dot.building { background: var(--ink); }
+      .linkbtn {
+        background: none; border: none; color: var(--muted); text-decoration: underline;
+        font-weight: 400; font-size: 11px; padding: 0; margin-top: 14px; text-transform: none; letter-spacing: 0;
+      }
+      details { margin-top: 14px; }
+      summary { cursor: pointer; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; }
+      .hidden { display: none; }
+    </style>
+  </head>
+  <body>
+    <div class="head">
+      <img src="oliver.svg" alt="" />
+      <h1>Oliver</h1>
+    </div>
+
+    <!-- Logged-out: connect an account -->
+    <div class="body" id="connect-view">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="you@example.com" />
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="password" />
+      <button class="primary" id="connect">Connect</button>
+
+      <div class="divider">or paste token</div>
+      <label for="token">Token (from dashboard)</label>
+      <input type="text" id="token" placeholder="paste your token" />
+      <button class="secondary" id="connect-token">Use token</button>
+
+      <details>
+        <summary>Server</summary>
+        <label for="apiBase">Oliver server URL</label>
+        <input type="text" id="apiBase" placeholder="http://localhost:8787" />
+      </details>
+
+      <div id="connect-error" class="alert hidden"></div>
+      <p class="hint">No account yet? Create one on the Oliver dashboard, then connect here.</p>
+    </div>
+
+    <!-- Logged-in: controls -->
+    <div class="body hidden" id="account-view">
+      <div class="stat">
+        <div class="num" id="stat-num">0</div>
+        <div class="lbl">passages spotted</div>
+        <div class="meta" id="stat-meta"><span class="dot"></span>connected</div>
+      </div>
+      <div class="row">
+        <label for="enabled">Enabled</label>
+        <input type="checkbox" id="enabled" />
+      </div>
+      <div class="row">
+        <label for="threshold">Sensitivity</label>
+        <input type="range" id="threshold" min="0.25" max="0.75" step="0.01" />
+        <span class="val" id="threshold-val">0.45</span>
+      </div>
+      <div class="hint">Lower = highlight more · higher = only the strongest matches.</div>
+      <button class="linkbtn" id="disconnect">Disconnect this account</button>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

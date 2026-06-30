@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Log in — Oliver{% endblock %}
+{% block body %}
+<div class="centered">
+  <form class="card" method="post" action="/login">
+    <div class="brand small"><img src="/static/oliver.svg" alt="" width="32" height="32" /><span>Oliver</span></div>
+    <h2>Welcome back</h2>
+    {% if error %}<div class="alert">{{ error }}</div>{% endif %}
+    <label>Email<input type="email" name="email" required /></label>
+    <label>Password<input type="password" name="password" required /></label>
+    <button type="submit">Log in</button>
+    <p class="muted">New here? <a href="/">Create an account</a></p>
+  </form>
+</div>
+{% endblock %}

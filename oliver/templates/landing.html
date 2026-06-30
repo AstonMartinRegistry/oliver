@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Oliver — read what you'd love{% endblock %}
+{% block body %}
+<div class="split">
+  <section class="pitch">
+    <div class="brand"><img src="/static/oliver.svg" alt="" width="40" height="40" /><span>Oliver</span></div>
+    <h1>The reader on your shoulder.</h1>
+    <p class="lede">
+      Oliver learns your taste from everything you've highlighted on Curius, then
+      perches on any page you visit — quietly bracketing the passages you'd love and
+      whispering how they connect to what you've read before.
+    </p>
+    <ul class="features">
+      <li><b>Knows your taste.</b> Built from your real Curius highlights.</li>
+      <li><b>Highlights as you browse.</b> Green brackets on the passages worth your time.</li>
+      <li><b>Explains the link.</b> A friendly parrot note on every match.</li>
+    </ul>
+  </section>
+
+  <section class="card-wrap">
+    <form class="card" method="post" action="/signup">
+      <h2>Create your account</h2>
+      {% if error %}<div class="alert">{{ error }}</div>{% endif %}
+      <label>Email<input type="email" name="email" required placeholder="you@example.com" /></label>
+      <label>Password<input type="password" name="password" required placeholder="at least 6 characters" /></label>
+      <label>
+        Curius user ID
+        <input type="text" name="curius" required placeholder="e.g. 4974 or your profile link" />
+        <span class="hint">Open your Curius profile — the number in <code>curius.app/api/users/<b>ID</b>/links</code>. You can also paste your profile link.</span>
+      </label>
+      <button type="submit">Bring Oliver to life →</button>
+      <p class="muted">Already have an account? <a href="/login">Log in</a></p>
+    </form>
+  </section>
+</div>
+{% endblock %}

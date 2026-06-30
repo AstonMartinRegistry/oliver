@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Oliver{% endblock %}
+{% block body %}
+<header class="topbar">
+  <div class="brand small"><img src="/static/oliver.svg" alt="" width="32" height="32" /><span>Oliver</span></div>
+  <div class="topbar-right">
+    <span class="muted">{{ user.email }}</span>
+    <a class="ghost" href="/logout">Log out</a>
+  </div>
+</header>
+
+<main class="dash">
+  <section class="hero-stat">
+    <div class="big-number" id="match-count" data-matches="{{ user.match_count }}">{{ user.match_count }}</div>
+    <div class="big-label">passages Oliver has spotted for you</div>
+    <div class="status-pill" id="build-status" data-status="{{ user.status }}">
+      <span class="dot"></span><span id="status-text">{{ user.status_msg or user.status }}</span>
+    </div>
+  </section>
+
+  <section class="panel" id="connect-panel">
+    <h3>Connect your extension</h3>
+    <p class="muted">Open the Oliver extension, paste this token (or just log in there with your email and password), and it will start highlighting for this account.</p>
+    <div class="token-row">
+      <code id="token">{{ user.token }}</code>
+      <button class="ghost" onclick="copyToken()">Copy</button>
+    </div>
+    <p class="muted small">API base: <code>{{ api_base }}</code></p>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h3>Your taste — {{ links|length }} links · {{ total_highlights }} highlights</h3>
+    </div>
+    <p class="muted">Delete anything you don't want Oliver learning from. Removing a link drops its highlights from your taste immediately.</p>
+    {% if not links %}
+      <p class="empty">No links yet. If you just signed up, Oliver is still fetching your Curius library — this page updates automatically.</p>
+    {% else %}
+    <ul class="links">
+      {% for l in links %}
+      <li>
+        <div class="link-main">
+          {% if l.url %}<a href="{{ l.url }}" target="_blank" rel="noopener">{{ l.title }}</a>
+          {% else %}<span>{{ l.title }}</span>{% endif %}
+          <span class="count">{{ l.n }} highlight{{ '' if l.n == 1 else 's' }}</span>
+        </div>
+        <form method="post" action="/links/{{ l.id }}/delete" onsubmit="return confirm('Remove this link from your taste?')">
+          <button class="danger" type="submit" title="Delete">✕</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+</main>
+
+<script src="/static/dashboard.js"></script>
+{% endblock %}

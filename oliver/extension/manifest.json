@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "Oliver — the reader on your shoulder",
+  "version": "0.2.0",
+  "description": "Oliver learns your taste from Curius and highlights the passages you'd love on any page, with a parrot note explaining the connection.",
+  "permissions": ["storage", "activeTab", "scripting", "webNavigation", "tabs"],
+  "host_permissions": ["*://*/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["viewer.html", "viewer.js", "viewer.css", "vendor/*"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "action": {
+    "default_title": "Oliver",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "exclude_matches": [
+        "*://*.soundcloud.com/*",
+        "*://soundcloud.com/*",
+        "*://*.linkedin.com/*",
+        "*://linkedin.com/*",
+        "*://*.twitter.com/*",
+        "*://twitter.com/*",
+        "*://*.x.com/*",
+        "*://x.com/*"
+      ],
+      "exclude_globs": [
+        "*://localhost:8787/*",
+        "*://127.0.0.1:8787/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

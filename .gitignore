@@ -1,0 +1,12 @@
+# Only the self-contained Oliver app is pushed; ignore everything else at the
+# repo root (experiments, training scripts, logs, secrets, local data, etc.).
+/*
+
+# Keep the Oliver app and this file tracked.
+!/oliver/
+!/.gitignore
+
+# Safety nets in case anything above is ever un-ignored.
+.env
+__pycache__/
+*.pyc
