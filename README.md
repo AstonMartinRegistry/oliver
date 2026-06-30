@@ -1,49 +1,56 @@
-# personalassistant
+# Oliver — the reader on your shoulder
 
-A personal knowledge system. Tentacles pull information in, an LLM reasons over
-it, and an Obsidian vault stores it. This is the first, simplest piece: a daily
-sync that pulls saved Curius links into the vault.
+Oliver learns your reading taste from your **Curius** highlights, then its browser
+extension highlights the passages you'd love on any page and a little parrot
+explains the connection to something you saved before.
 
-## Curius sync
+It's a small multi-tenant product:
 
-`curius_sync.py` fetches your saved Curius links and writes one markdown note
-per link into the vault. It is incremental — it only writes notes for links it
-hasn't seen before (dedup by Curius link id), so it is safe to run every day.
+- **Sign up** with your email + Curius user ID. A background job fetches your whole
+  Curius library and embeds every highlight into your personal taste index.
+- **Dashboard** shows how many passages Oliver has spotted for you (one big number),
+  your build status, your API token, and every link in your taste — delete any you
+  don't want Oliver learning from.
+- **Extension** logs into your account (email/password → API token) and scores every
+  page against *your* index. Each account drives its own extension.
 
-### Run it manually
+## Architecture
+
+| Piece | What it does |
+|-------|--------------|
+| `oliver/app.py` | FastAPI: auth (cookie sessions), dashboard, and the token-authed `/api/*` the extension calls. |
+| `oliver/db.py` | SQLite (`data/oliver.db`): users, links, highlights (+ embedding blobs), match counter. |
+| `oliver/taste.py` | Shared embedding model, per-user in-memory index, scoring, the Curius build job, Cerebras prompt. |
+| `oliver/curius.py` | Fetches a user's Curius library (stdlib only). |
+| `oliver/templates/`, `oliver/static/` | Server-rendered landing / login / dashboard. |
+| `oliver/extension/` | The Chrome extension (token auth, match reporting). |
+
+Scoring is pure vector math (cosine vs. your highlights) — fast and free. Cerebras is
+only used to stream the one-sentence parrot note per match.
+
+## Run it
 
 ```bash
-python3 curius_sync.py
+cd oliver
+pip install -r requirements.txt          # first time
+python3 app.py                           # → http://localhost:8787
 ```
 
-### Configuration (environment variables)
+Then:
 
-| Variable | Default | Meaning |
-|---|---|---|
-| `CURIUS_USER_ID` | `4974` (curius.app/kiss) | Curius numeric user id |
-| `VAULT_PATH` | `./vault` | Path to your Obsidian vault |
-| `CURIUS_SUBFOLDER` | `Curius` | Folder inside the vault for the notes |
+1. Open <http://localhost:8787>, create an account with your Curius user ID
+   (the number in `curius.app/api/users/ID/links`).
+2. Wait for the dashboard to say **ready** (it fetches + embeds in the background).
+3. Load the extension: Chrome → `chrome://extensions` → *Developer mode* →
+   *Load unpacked* → select `oliver/extension`.
+4. Click the Oliver toolbar icon, log in with your email + password, and browse.
 
-Point it at your real vault:
+## Config
 
-```bash
-VAULT_PATH="$HOME/path/to/your/Obsidian Vault" python3 curius_sync.py
-```
+Create `oliver/.env` (reads `oliver/.env` then real env vars):
 
-### Run it every day
+- `CEREBRAS_API_KEY` — enables the streaming parrot notes (scoring works without it).
+- `OLIVER_PORT` (default `8787`), `OLIVER_EMBED_MODEL` (default `all-MiniLM-L6-v2`),
+  `OLIVER_MINSCORE`, `OLIVER_TOPK`, `OLIVER_MAX_CONN`.
 
-Edit `VAULT_PATH` in `run_curius_sync.sh`, then add a cron entry
-(`crontab -e`) to run it daily at 7am:
-
-```cron
-0 7 * * * /Users/danielk/Desktop/projects/personalassistant/run_curius_sync.sh
-```
-
-Output is appended to `curius_sync.log`.
-
-## What's next (not built yet)
-
-- Fetch full article text when Curius lacks it
-- LLM extraction (entities + typed relations) into a real knowledge graph
-- Retrieval over the graph for the assistant
-# oliver
+`oliver/data/` (SQLite DB + signing key) is per-deployment and should not be committed.
