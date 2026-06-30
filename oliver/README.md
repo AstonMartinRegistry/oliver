@@ -50,7 +50,9 @@ Then:
 Reads `../.env` then `oliver/.env` then real env vars:
 
 - `CEREBRAS_API_KEY` — enables the streaming parrot notes (scoring works without it).
-- `OLIVER_PORT` (default `8787`), `OLIVER_EMBED_MODEL` (default `all-MiniLM-L6-v2`),
-  `OLIVER_MINSCORE`, `OLIVER_TOPK`, `OLIVER_MAX_CONN`.
+
+That's the only setting you need. A few optional tuning knobs (`OLIVER_PORT`,
+`OLIVER_EMBED_MODEL`, `OLIVER_MINSCORE`, `OLIVER_TOPK`, `OLIVER_MAX_CONN`) all have
+sensible defaults.
 
 `data/` (SQLite DB + signing key) is per-deployment and should not be committed.
